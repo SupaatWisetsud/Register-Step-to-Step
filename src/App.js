@@ -1,26 +1,59 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useCallback, useReducer, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import styles from './style.module.css'
+import StepOne from './StepOne';
+import StepTwo from './StepTwo';
 
 function App() {
+
+  const [step, setStep] = useState(0);
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const setData = useCallback( obj => dispatch({type: "SET_DATA", payload: obj}), []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
+    <div className={styles.container} >
+      <div className={styles.from}>
+        
+        <p className={styles.title}> 
+          <FontAwesomeIcon icon={faUserCircle} style={{marginRight: 5}} /> สร้างบัญชี
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+        <div className={styles.content}>
+          <StepOne 
+            show={step === 0}
+            onNext={() => setStep(step + 1)} 
+            state={state}
+            onChange={obj => {
+              setData(obj)
+            }}
+          />        
+          
+          <StepTwo 
+            show={step === 1} 
+            onBack={() => setStep(step - 1)}
+            state={state}
+            onChange={obj => {
+              setData(obj)
+            }}
+          />
+        </div>
+
+      </div>
     </div>
   );
+}
+
+const reducer = (state, action) => {
+  switch (action.type) {
+      case "SET_DATA":
+          return Object.assign({},state,action.payload)
+      default:
+          return state;
+  }
+}
+const initialState = {
 }
 
 export default App;
